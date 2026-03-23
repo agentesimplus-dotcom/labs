@@ -1,0 +1,104 @@
+{
+    "title": "Administración",
+    "tenants": {
+        "title": "Empresas",
+        "name": "Nombre",
+        "code": "Código",
+        "contactEmail": "Email de Contacto",
+        "defaultLanguage": "Idioma Predeterminado",
+        "maxStores": "Máx. Sucursales",
+        "maxTags": "Máx. Etiquetas",
+        "create": "Crear Empresa",
+        "edit": "Editar Empresa",
+        "noTenants": "No se encontraron empresas."
+    },
+    "stores": {
+        "title": "Sucursales",
+        "name": "Nombre",
+        "code": "Código",
+        "timezone": "Zona Horaria",
+        "address": "Dirección",
+        "searchTimezone": "Buscar zona horaria...",
+        "create": "Crear Sucursal",
+        "edit": "Editar Sucursal",
+        "noStores": "No se encontraron sucursales."
+    },
+    "users": {
+        "title": "Usuarios",
+        "email": "Correo",
+        "name": "Nombre",
+        "role": "Rol",
+        "language": "Idioma",
+        "storeScope": "Alcance de Sucursales",
+        "create": "Crear Usuario",
+        "edit": "Editar Usuario",
+        "resetPassword": "Restablecer Contraseña",
+        "noUsers": "No se encontraron usuarios.",
+        "roles": {
+            "SUPER_ADMIN": "Super Admin",
+            "TENANT_ADMIN": "Admin Empresa",
+            "STORE_ADMIN": "Admin Sucursal",
+            "STORE_OPERATOR": "Operador"
+        },
+        "newPassword": "Nueva Contraseña",
+        "confirmPassword": "Confirmar Contraseña",
+        "passwordMinLength": "La contraseña debe tener al menos 8 caracteres.",
+        "passwordMismatch": "Las contraseñas no coinciden.",
+        "passwordResetSuccess": "Contraseña restablecida exitosamente."
+    },
+    "products": {
+        "title": "Productos / SKUs",
+        "sku": "SKU",
+        "name": "Nombre",
+        "category": "Categoría",
+        "brand": "Marca",
+        "barcode": "Código de Barras",
+        "price": "Precio",
+        "currency": "Moneda",
+        "create": "Crear Producto",
+        "edit": "Editar Producto",
+        "noProducts": "No se encontraron productos."
+    },
+    "tagModels": {
+        "title": "Modelos de Etiqueta",
+        "name": "Nombre",
+        "width": "Ancho (px)",
+        "height": "Alto (px)",
+        "supportsRed": "Soporta Rojo",
+        "packingVersion": "Versión de Empaque",
+        "create": "Crear Modelo",
+        "edit": "Editar Modelo",
+        "noModels": "No se encontraron modelos."
+    },
+    "gateways": {
+        "title": "Gateways",
+        "mac": "Dirección MAC",
+        "store": "Sucursal",
+        "firmware": "Firmware",
+        "lastSeen": "Última Conexión",
+        "create": "Registrar Gateway",
+        "edit": "Editar Gateway",
+        "noGateways": "No se encontraron gateways."
+    },
+    "tags": {
+        "title": "Etiquetas",
+        "mac": "Dirección MAC",
+        "model": "Modelo",
+        "store": "Sucursal",
+        "product": "Producto",
+        "lastSeen": "Última Conexión",
+        "create": "Registrar Etiqueta",
+        "edit": "Editar Etiqueta",
+        "noTags": "No se encontraron etiquetas."
+    },
+    "imports": {
+        "title": "Historial de Importaciones",
+        "entity": "Entidad",
+        "totalRows": "Total Filas",
+        "success": "Éxitos",
+        "errors": "Errores",
+        "createdBy": "Creado Por",
+        "downloadErrors": "Descargar Errores",
+        "noImports": "No se encontraron importaciones."
+    }
+}

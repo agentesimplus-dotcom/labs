@@ -1,0 +1,70 @@
+{
+    "wizard": {
+        "title": "Asistente de Importación",
+        "step1": "Seleccionar Entidad",
+        "step2": "Proporcionar Datos",
+        "step3": "Mapear Columnas",
+        "step4": "Validar",
+        "step5": "Ejecutar",
+        "step6": "Resultados"
+    },
+    "entity": {
+        "select": "Seleccionar entidad a importar",
+        "PRODUCTS": "Productos / SKUs",
+        "TAGS": "Etiquetas",
+        "GATEWAYS": "Gateways",
+        "STORES": "Tiendas",
+        "USERS": "Usuarios",
+        "LOCATION_SLOTS": "Posiciones de Ubicación"
+    },
+    "data": {
+        "uploadFile": "Subir archivo CSV o XLSX",
+        "pasteData": "Pegar desde hoja de cálculo",
+        "pasteHint": "Copia filas desde Excel o Google Sheets y pégalas abajo (separadas por Tab)",
+        "orSeparator": "o",
+        "downloadTemplate": "Descargar Plantilla",
+        "rowsDetected": "{{count}} filas detectadas",
+        "columnsDetected": "{{count}} columnas detectadas"
+    },
+    "mapping": {
+        "title": "Mapear Columnas",
+        "sourceColumn": "Columna Origen",
+        "targetField": "Campo Destino",
+        "skip": "— Omitir —",
+        "required": "Requerido",
+        "autoDetected": "Auto-detectado"
+    },
+    "validation": {
+        "title": "Resultados de Validación",
+        "validRows": "Filas válidas",
+        "invalidRows": "Filas inválidas",
+        "errors": "Errores",
+        "row": "Fila",
+        "field": "Campo",
+        "message": "Mensaje",
+        "dryRunComplete": "Validación completa. No se escribieron datos.",
+        "readyToImport": "Listo para importar {{count}} filas"
+    },
+    "mode": {
+        "label": "Modo de Importación",
+        "UPSERT": "Crear o Actualizar (Upsert)",
+        "CREATE_ONLY": "Solo Crear (omitir existentes)",
+        "UPDATE_ONLY": "Solo Actualizar (omitir nuevos)"
+    },
+    "execution": {
+        "title": "Importando...",
+        "progress": "Progreso: {{current}} / {{total}}",
+        "processing": "Procesando filas...",
+        "complete": "¡Importación Completa!"
+    },
+    "results": {
+        "title": "Resultados de Importación",
+        "summary": "Resumen",
+        "totalProcessed": "Total Procesados",
+        "successful": "Exitosos",
+        "failed": "Fallidos",
+        "downloadErrors": "Descargar Reporte de Errores (CSV)",
+        "importAnother": "Importar Otro",
+        "viewRecords": "Ver Registros"
+    }
+}

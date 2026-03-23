@@ -1,0 +1,70 @@
+{
+    "wizard": {
+        "title": "Import Wizard",
+        "step1": "Select Entity",
+        "step2": "Provide Data",
+        "step3": "Map Columns",
+        "step4": "Validate",
+        "step5": "Execute",
+        "step6": "Results"
+    },
+    "entity": {
+        "select": "Select entity to import",
+        "PRODUCTS": "Products / SKUs",
+        "TAGS": "Tags",
+        "GATEWAYS": "Gateways",
+        "STORES": "Stores",
+        "USERS": "Users",
+        "LOCATION_SLOTS": "Location Slots"
+    },
+    "data": {
+        "uploadFile": "Upload CSV or XLSX file",
+        "pasteData": "Paste from spreadsheet",
+        "pasteHint": "Copy rows from Excel or Google Sheets and paste below (Tab-separated)",
+        "orSeparator": "or",
+        "downloadTemplate": "Download Template",
+        "rowsDetected": "{{count}} rows detected",
+        "columnsDetected": "{{count}} columns detected"
+    },
+    "mapping": {
+        "title": "Map Columns",
+        "sourceColumn": "Source Column",
+        "targetField": "Target Field",
+        "skip": "— Skip —",
+        "required": "Required",
+        "autoDetected": "Auto-detected"
+    },
+    "validation": {
+        "title": "Validation Results",
+        "validRows": "Valid rows",
+        "invalidRows": "Invalid rows",
+        "errors": "Errors",
+        "row": "Row",
+        "field": "Field",
+        "message": "Message",
+        "dryRunComplete": "Dry-run complete. No data was written.",
+        "readyToImport": "Ready to import {{count}} rows"
+    },
+    "mode": {
+        "label": "Import Mode",
+        "UPSERT": "Create or Update (Upsert)",
+        "CREATE_ONLY": "Create Only (skip existing)",
+        "UPDATE_ONLY": "Update Only (skip new)"
+    },
+    "execution": {
+        "title": "Importing...",
+        "progress": "Progress: {{current}} / {{total}}",
+        "processing": "Processing rows...",
+        "complete": "Import Complete!"
+    },
+    "results": {
+        "title": "Import Results",
+        "summary": "Summary",
+        "totalProcessed": "Total Processed",
+        "successful": "Successful",
+        "failed": "Failed",
+        "downloadErrors": "Download Error Report (CSV)",
+        "importAnother": "Import Another",
+        "viewRecords": "View Records"
+    }
+}

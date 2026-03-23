@@ -1,0 +1,104 @@
+{
+    "title": "Administration",
+    "tenants": {
+        "title": "Companies",
+        "name": "Name",
+        "code": "Code",
+        "contactEmail": "Contact Email",
+        "defaultLanguage": "Default Language",
+        "maxStores": "Max Branches",
+        "maxTags": "Max Tags",
+        "create": "Create Company",
+        "edit": "Edit Company",
+        "noTenants": "No companies found."
+    },
+    "stores": {
+        "title": "Branches",
+        "name": "Name",
+        "code": "Code",
+        "timezone": "Timezone",
+        "address": "Address",
+        "searchTimezone": "Search timezone...",
+        "create": "Create Branch",
+        "edit": "Edit Branch",
+        "noStores": "No branches found."
+    },
+    "users": {
+        "title": "Users",
+        "email": "Email",
+        "name": "Name",
+        "role": "Role",
+        "language": "Language",
+        "storeScope": "Branch Scope",
+        "create": "Create User",
+        "edit": "Edit User",
+        "resetPassword": "Reset Password",
+        "noUsers": "No users found.",
+        "roles": {
+            "SUPER_ADMIN": "Super Admin",
+            "TENANT_ADMIN": "Company Admin",
+            "STORE_ADMIN": "Branch Admin",
+            "STORE_OPERATOR": "Operator"
+        },
+        "newPassword": "New Password",
+        "confirmPassword": "Confirm Password",
+        "passwordMinLength": "Password must be at least 8 characters.",
+        "passwordMismatch": "Passwords do not match.",
+        "passwordResetSuccess": "Password reset successfully."
+    },
+    "products": {
+        "title": "Products / SKUs",
+        "sku": "SKU",
+        "name": "Name",
+        "category": "Category",
+        "brand": "Brand",
+        "barcode": "Barcode",
+        "price": "Price",
+        "currency": "Currency",
+        "create": "Create Product",
+        "edit": "Edit Product",
+        "noProducts": "No products found."
+    },
+    "tagModels": {
+        "title": "Tag Models",
+        "name": "Name",
+        "width": "Width (px)",
+        "height": "Height (px)",
+        "supportsRed": "Supports Red",
+        "packingVersion": "Packing Version",
+        "create": "Create Tag Model",
+        "edit": "Edit Tag Model",
+        "noModels": "No tag models found."
+    },
+    "gateways": {
+        "title": "Gateways",
+        "mac": "MAC Address",
+        "store": "Branch",
+        "firmware": "Firmware",
+        "lastSeen": "Last Seen",
+        "create": "Register Gateway",
+        "edit": "Edit Gateway",
+        "noGateways": "No gateways found."
+    },
+    "tags": {
+        "title": "Tags",
+        "mac": "MAC Address",
+        "model": "Model",
+        "store": "Branch",
+        "product": "Product",
+        "lastSeen": "Last Seen",
+        "create": "Register Tag",
+        "edit": "Edit Tag",
+        "noTags": "No tags found."
+    },
+    "imports": {
+        "title": "Import History",
+        "entity": "Entity",
+        "totalRows": "Total Rows",
+        "success": "Success",
+        "errors": "Errors",
+        "createdBy": "Created By",
+        "downloadErrors": "Download Errors",
+        "noImports": "No imports found."
+    }
+}

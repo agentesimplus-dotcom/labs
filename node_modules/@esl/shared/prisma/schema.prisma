@@ -1,0 +1,429 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Tenant {
+  id              String   @id @default(uuid())
+  name            String
+  code            String?  @unique
+  status          String   @default("ACTIVE")
+  defaultLanguage String   @default("en") @map("default_language")
+  contactEmail    String?  @map("contact_email")
+  maxStores       Int?     @map("max_stores")
+  maxTags         Int?     @map("max_tags")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  users           User[]
+  apiKeys         ApiKey[]
+  stores          Store[]
+  commands        ESLCommand[]
+  tags            Tag[]
+  templates       Template[]
+  campaigns       Campaign[]
+  scheduledJobs   ScheduledJob[]
+  products        Product[]
+  imports         Import[]
+}
+
+model User {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  name         String
+  role         String   @default("STORE_OPERATOR") // SUPER_ADMIN, TENANT_ADMIN, STORE_ADMIN, STORE_OPERATOR
+  language     String   @default("en")
+  storeScope   String?  @map("store_scope") @db.Text // JSON array of storeIds for STORE_ADMIN/OPERATOR
+  status       String   @default("ACTIVE")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  tenant       Tenant   @relation(fields: [tenantId], references: [id])
+  apiKeys      ApiKey[]
+
+  @@index([tenantId])
+  @@index([role])
+}
+
+model ApiKey {
+  id         String   @id @default(uuid())
+  keyHash    String   @unique @map("key_hash")
+  tenantId   String   @map("tenant_id")
+  userId     String?  @map("user_id")
+  name       String
+  scopes     String
+  status     String   @default("ACTIVE")
+  expiresAt  DateTime? @map("expires_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
+
+  @@index([tenantId])
+  @@index([userId])
+}
+
+model Store {
+  id         String   @id @default(uuid())
+  tenantId   String   @map("tenant_id")
+  name       String
+  code       String?  // natural key for imports (unique per tenant)
+  timezone   String   @default("UTC")
+  address    String?  @db.Text
+  status     String   @default("ACTIVE")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+  
+  tenant     Tenant   @relation(fields: [tenantId], references: [id])
+  gateways   Gateway[]
+  tags       Tag[]
+  commands   ESLCommand[]
+  storeDefaults StoreDefault[]
+  locationZones LocationZone[]
+  locationSlots LocationSlot[]
+  tagAssignments TagAssignment[]
+  productPlacements ProductPlacement[]
+  campaigns  Campaign[]
+  scheduledJobs ScheduledJob[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+}
+
+model TagModel {
+  id                  String   @id @default(uuid())
+  name                String
+  width               Int
+  height              Int
+  supportsRed         Boolean  @default(false) @map("supports_red")
+  bitPackingVersion   String   @default("v2") @map("bit_packing_version")
+  
+  tags                Tag[]
+  templateVersions    TemplateVersion[]
+  storeDefaults       StoreDefault[]
+}
+
+model Gateway {
+  macAddress      String   @id @map("mac_address")
+  tenantId        String   @map("tenant_id")
+  storeId         String   @map("store_id")
+  lastSeq         BigInt   @default(0) @map("last_seq")
+  status          String   @default("UNKNOWN")
+  lastSeenAt      DateTime? @map("last_seen_at")
+  firmwareVersion String?  @map("firmware_version")
+
+  store           Store    @relation(fields: [storeId], references: [id])
+
+  @@index([storeId])
+  @@index([status])
+}
+
+model Tag {
+  macAddress      String   @id @map("mac_address")
+  tenantId        String   @map("tenant_id")
+  storeId         String   @map("store_id")
+  modelId         String   @map("model_id")
+  productId       String?  @map("product_id")
+  lastSeq         BigInt   @default(0) @map("last_seq")
+  lastUpdateAt    DateTime? @map("last_update_at")
+  lastSeenAt      DateTime? @map("last_seen_at")
+  status          String   @default("UNKNOWN")
+
+  tenant          Tenant   @relation(fields: [tenantId], references: [id])
+  store           Store    @relation(fields: [storeId], references: [id])
+  model           TagModel @relation(fields: [modelId], references: [id])
+  assignment      TagAssignment?
+
+  @@index([storeId, productId])
+  @@index([storeId, status])
+}
+
+model ESLCommand {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  storeId        String   @map("store_id")
+  gatewayMac     String   @map("gateway_mac")
+  tagMac         String   @map("tag_mac")
+  seq            BigInt
+  payloadHash    String   @map("payload_hash")
+  status         String   @default("PENDING")
+  attempts       Int      @default(0)
+  nextRetryAt    DateTime? @map("next_retry_at")
+  lastError      String?  @map("last_error") @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  ackAt          DateTime? @map("ack_at")
+
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  store          Store    @relation(fields: [storeId], references: [id])
+
+  @@index([status, nextRetryAt])
+  @@index([gatewayMac, status])
+  @@index([tagMac, status])
+  @@map("esl_commands")
+}
+
+model ESLRenderCache {
+  designHash     String   @id @map("design_hash")
+  modelId        String   @map("model_id")
+  hexBlack       String   @map("hex_black") @db.LongText
+  hexRed         String?  @map("hex_red") @db.LongText
+  width          Int
+  height         Int
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("esl_render_cache")
+}
+
+// ─── NEW MODELS: Templates & Versioning ────────────────────────────
+
+model Template {
+  id          String   @id @default(uuid())
+  tenantId    String   @map("tenant_id")
+  name        String
+  description String?  @db.Text
+  status      String   @default("ACTIVE") // ACTIVE, ARCHIVED
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id])
+  versions    TemplateVersion[]
+
+  @@index([tenantId, status])
+  @@map("templates")
+}
+
+model TemplateVersion {
+  id                String   @id @default(uuid())
+  templateId        String   @map("template_id")
+  version           Int
+  name              String?  @map("name")
+  tagModelId        String   @map("tag_model_id")
+  colorMode         String   @default("BW") @map("color_mode") // BW | BWR
+  fabricJson        String?  @map("fabric_json") @db.LongText
+  normalizedDtoJson String?  @map("normalized_dto_json") @db.LongText
+  designHash        String?  @map("design_hash") // SHA-256 of normalizedDtoJson
+  isPublished       Boolean  @default(false) @map("is_published")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  template          Template @relation(fields: [templateId], references: [id])
+  tagModel          TagModel @relation(fields: [tagModelId], references: [id])
+  storeDefaults     StoreDefault[]
+  tagAssignments    TagAssignment[]
+  campaigns         Campaign[]
+
+  @@unique([templateId, version])
+  @@index([tagModelId, colorMode])
+  @@index([designHash])
+  @@map("template_versions")
+}
+
+// ─── Store Defaults ────────────────────────────────────────────────
+
+model StoreDefault {
+  id                  String   @id @default(uuid())
+  tenantId            String   @map("tenant_id")
+  storeId             String   @map("store_id")
+  tagModelId          String   @map("tag_model_id")
+  colorMode           String   @map("color_mode") // BW | BWR
+  templateVersionId   String   @map("template_version_id")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  store               Store    @relation(fields: [storeId], references: [id])
+  tagModel            TagModel @relation(fields: [tagModelId], references: [id])
+  templateVersion     TemplateVersion @relation(fields: [templateVersionId], references: [id])
+
+  @@unique([storeId, tagModelId, colorMode])
+  @@index([tenantId])
+  @@map("store_defaults")
+}
+
+// ─── Locations (Optional Planogram) ────────────────────────────────
+
+model LocationZone {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  storeId   String   @map("store_id")
+  name      String
+
+  store     Store    @relation(fields: [storeId], references: [id])
+  slots     LocationSlot[]
+
+  @@index([storeId])
+  @@map("location_zones")
+}
+
+model LocationSlot {
+  id           String   @id @default(uuid())
+  tenantId     String   @map("tenant_id")
+  storeId      String   @map("store_id")
+  zoneId       String   @map("zone_id")
+  code         String   // e.g. "A1-B2-S3-P4"
+  metadataJson String?  @map("metadata_json") @db.Text
+  status       String   @default("ACTIVE") // ACTIVE, INACTIVE
+
+  store        Store    @relation(fields: [storeId], references: [id])
+  zone         LocationZone @relation(fields: [zoneId], references: [id])
+  tagAssignments TagAssignment[]
+  productPlacements ProductPlacement[]
+
+  @@unique([storeId, code])
+  @@index([zoneId])
+  @@map("location_slots")
+}
+
+// ─── Tag Assignments (Operational State) ───────────────────────────
+
+model TagAssignment {
+  id                  String   @id @default(uuid())
+  tagMac              String   @unique @map("tag_mac")
+  tenantId            String   @map("tenant_id")
+  storeId             String   @map("store_id")
+  locationSlotId      String?  @map("location_slot_id")
+  sku                 String?
+  templateVersionId   String?  @map("template_version_id")
+  assignedAt          DateTime @default(now()) @map("assigned_at")
+  assignedBy          String?  @map("assigned_by")
+  source              String   @default("WEB") // WEB | MOBILE | IMPORT
+  status              String   @default("ACTIVE") // ACTIVE, INACTIVE
+
+  tag                 Tag      @relation(fields: [tagMac], references: [macAddress])
+  store               Store    @relation(fields: [storeId], references: [id])
+  locationSlot        LocationSlot? @relation(fields: [locationSlotId], references: [id])
+  templateVersion     TemplateVersion? @relation(fields: [templateVersionId], references: [id])
+
+  @@index([tenantId, storeId])
+  @@index([sku])
+  @@index([storeId, status])
+  @@map("tag_assignments")
+}
+
+// ─── Product Placements (Planogram) ────────────────────────────────
+
+model ProductPlacement {
+  id              String   @id @default(uuid())
+  tenantId        String   @map("tenant_id")
+  storeId         String   @map("store_id")
+  locationSlotId  String   @map("location_slot_id")
+  sku             String
+  effectiveFrom   DateTime @map("effective_from")
+  effectiveTo     DateTime? @map("effective_to")
+  active          Boolean  @default(true)
+
+  store           Store    @relation(fields: [storeId], references: [id])
+  locationSlot    LocationSlot @relation(fields: [locationSlotId], references: [id])
+
+  @@index([storeId, sku])
+  @@index([locationSlotId, active])
+  @@map("product_placements")
+}
+
+// ─── Campaigns & Scheduled Jobs ────────────────────────────────────
+
+model Campaign {
+  id                  String   @id @default(uuid())
+  tenantId            String   @map("tenant_id")
+  storeId             String?  @map("store_id")
+  name                String
+  startAt             DateTime @map("start_at")
+  endAt               DateTime @map("end_at")
+  templateVersionId   String   @map("template_version_id")
+  filterJson          String?  @map("filter_json") @db.Text // JSON: {skus:[], categories:[], tagMacs:[]}
+  status              String   @default("DRAFT") // DRAFT, ACTIVE, PAUSED, COMPLETED, CANCELLED
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  tenant              Tenant   @relation(fields: [tenantId], references: [id])
+  store               Store?   @relation(fields: [storeId], references: [id])
+  templateVersion     TemplateVersion @relation(fields: [templateVersionId], references: [id])
+
+  @@index([tenantId, status])
+  @@index([startAt, endAt])
+  @@map("campaigns")
+}
+
+model ScheduledJob {
+  id            String   @id @default(uuid())
+  tenantId      String   @map("tenant_id")
+  storeId       String?  @map("store_id")
+  type          String   // CAMPAIGN_APPLY, RECONCILE, RETRY_FAILED, HOUSEKEEPING
+  payloadJson   String?  @map("payload_json") @db.Text
+  cronExpr      String   @map("cron_expr")
+  enabled       Boolean  @default(true)
+  lastRunAt     DateTime? @map("last_run_at")
+  nextRunAt     DateTime? @map("next_run_at")
+
+  tenant        Tenant   @relation(fields: [tenantId], references: [id])
+  store         Store?   @relation(fields: [storeId], references: [id])
+
+  @@index([tenantId, type])
+  @@index([enabled, nextRunAt])
+  @@map("scheduled_jobs")
+}
+
+// ─── Products / SKUs ───────────────────────────────────────────────
+
+model Product {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  sku            String
+  name           String
+  category       String?
+  brand          String?
+  barcode        String?
+  price          Float?   @default(0)
+  currency       String   @default("USD")
+  attributesJson String?  @map("attributes_json") @db.Text
+  status         String   @default("ACTIVE")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+
+  @@unique([tenantId, sku])
+  @@index([tenantId, status])
+  @@index([barcode])
+  @@map("products")
+}
+
+// ─── Bulk Import Tracking ──────────────────────────────────────────
+
+model Import {
+  id             String   @id @default(uuid())
+  tenantId       String   @map("tenant_id")
+  entity         String   // PRODUCTS, TAGS, GATEWAYS, STORES, USERS, LOCATION_SLOTS
+  status         String   @default("PENDING") // PENDING, VALIDATING, VALIDATED, PROCESSING, COMPLETED, FAILED
+  mode           String   @default("UPSERT") // CREATE_ONLY, UPDATE_ONLY, UPSERT
+  mappingJson    String?  @map("mapping_json") @db.Text
+  totalRows      Int      @default(0) @map("total_rows")
+  successCount   Int      @default(0) @map("success_count")
+  errorCount     Int      @default(0) @map("error_count")
+  resultJson     String?  @map("result_json") @db.Text
+  createdBy      String   @map("created_by")
+  createdAt      DateTime @default(now()) @map("created_at")
+  completedAt    DateTime? @map("completed_at")
+
+  tenant         Tenant   @relation(fields: [tenantId], references: [id])
+  errors         ImportError[]
+
+  @@index([tenantId, entity])
+  @@index([status])
+  @@map("imports")
+}
+
+model ImportError {
+  id             String   @id @default(uuid())
+  importId       String   @map("import_id")
+  rowNumber      Int      @map("row_number")
+  field          String?
+  errorMessage   String   @map("error_message") @db.Text
+  rawRowJson     String?  @map("raw_row_json") @db.Text
+
+  import         Import   @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  @@index([importId])
+  @@map("import_errors")
+}
+
